@@ -1,0 +1,12 @@
+trap "true" SIGINT SIGTERM SIGKILL
+
+echo user:${SSH_USER_PASSWORD:-test} | chpasswd && \
+
+/usr/sbin/sshd -D &
+pid="$!"
+
+echo "sshd: ready"
+
+wait $pid
+
+exit 0
