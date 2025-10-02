@@ -20,6 +20,10 @@ RUN userdel -rf ubuntu || true && \
 COPY files/entrypoint.sh /tmp/entrypoint.sh
 COPY files/entry /tmp/entry
 
+USER user
+RUN echo "export PATH=$PATH" >> ~/.bashrc
+USER root
+
 EXPOSE 22
 
 ENTRYPOINT ["/tmp/entrypoint.sh"]
