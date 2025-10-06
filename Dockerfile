@@ -12,9 +12,10 @@ RUN userdel -rf ubuntu || true && \
         gdb \
         openssh-server \
         rsync \
+        sudo \
         valgrind && \
     groupmod -g ${DIALOUT_GID} dialout && \
-    useradd --shell /bin/bash -d /home/user -G users,tty,dialout -m user && \
+    useradd --shell /bin/bash -d /home/user -G users,tty,dialout,sudo -m user && \
     service ssh start
 
 COPY files/entrypoint.sh /tmp/entrypoint.sh
