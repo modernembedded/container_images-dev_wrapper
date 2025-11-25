@@ -40,6 +40,8 @@ RUN userdel -rf ubuntu || true && \
         valgrind \
         vim && \
     groupmod -g ${DIALOUT_GID} dialout && \
+    id user &>/dev/null && \
+    usermod --shell /bin/bash --home /home/user --groups users,tty,dialout,sudo user || \
     useradd --shell /bin/bash -d /home/user -G users,tty,dialout,sudo -m user && \
     service ssh start
 
