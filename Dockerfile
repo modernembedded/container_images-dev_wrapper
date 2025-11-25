@@ -39,11 +39,11 @@ RUN userdel -rf ubuntu || true && \
         sudo \
         valgrind \
         vim && \
-    groupmod -g ${DIALOUT_GID} dialout && \
-    id user &>/dev/null && \
+    groupmod -g ${DIALOUT_GID} dialout
+RUN id user &>/dev/null && \
     usermod --shell /bin/bash --home /home/user --groups users,tty,dialout,sudo user || \
-    useradd --shell /bin/bash -d /home/user -G users,tty,dialout,sudo -m user && \
-    service ssh start
+    useradd --shell /bin/bash -d /home/user -G users,tty,dialout,sudo -m user
+RUN service ssh start
 
 COPY files/requirements.txt /tmp/requirements.txt
 RUN rm -f /usr/lib/python*/EXTERNALLY-MANAGED && \
