@@ -37,7 +37,8 @@ RUN userdel -rf ubuntu || true && \
         python3 \
         rsync \
         sudo \
-        valgrind && \
+        valgrind \
+        vim && \
     groupmod -g ${DIALOUT_GID} dialout && \
     useradd --shell /bin/bash -d /home/user -G users,tty,dialout,sudo -m user && \
     service ssh start
