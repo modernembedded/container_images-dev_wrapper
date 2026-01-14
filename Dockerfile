@@ -24,11 +24,11 @@ FROM ${BASE_IMAGE}
 
 USER root
 
-ARG DIALOUT_GID=20
+ARG SERIAL_GID=20
 
-RUN userdel -rf ubuntu || true && \
-    apt update && \
-    apt install -y \
+RUN userdel -rf ubuntu || true \
+    && apt update \
+    && apt install -y \
         gdb \
         openocd \
         openssh-server \
@@ -37,20 +37,23 @@ RUN userdel -rf ubuntu || true && \
         python3 \
         rsync \
         sudo \
-        valgrind && \
-    groupmod -g ${DIALOUT_GID} dialout && \
-    useradd --shell /bin/bash -d /home/user -G users,tty,dialout,sudo -m user && \
-    service ssh start
+        valgrind \
+    && if ! getent group ${SERIAL_GID} > /dev/null; then groupadd -g ${SERIAL_GID} hostserial; fi \
+    && usermod -aG $(getent group ${SERIAL_GID} | cut -d: -f1),users,tty,sudo user \
+    || useradd --shell /bin/bash -d /home/user -G $(getent group ${SERIAL_GID} | cut -d: -f1),users,tty,sudo -m user \
+    && service ssh start
 
 COPY files/requirements.txt /tmp/requirements.txt
-RUN rm -f /usr/lib/python*/EXTERNALLY-MANAGED && \
-    pip install -r /tmp/requirements.txt
+RUN rm -f /usr/lib/python*/EXTERNALLY-MANAGED \
+    && pip install -r /tmp/requirements.txt
 
 COPY files/entrypoint.sh /tmp/entrypoint.sh
 COPY files/entry /tmp/entry
 
+ARG CONAN_HOME
 USER user
-RUN echo "export PATH=$PATH" >> ~/.bashrc
+RUN echo "export PATH=$PATH" >> ~/.bashrc \
+    && if [ -n "$CONAN_HOME" ]; then echo "export CONAN_HOME=$CONAN_HOME" >> ~/.bashrc; fi
 USER root
 
 EXPOSE 22
